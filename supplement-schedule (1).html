@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Wellness Schedule</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #faf7f2;
+    --warm-white: #fff9f3;
+    --soft-gold: #c9a84c;
+    --gold-light: #e8d5a3;
+    --morning: #f4845f;
+    --lunch: #5ba89e;
+    --dinner: #7b6fa0;
+    --bedtime: #3d5a73;
+    --text-dark: #2c2417;
+    --text-mid: #6b5a3e;
+    --text-light: #9e8c72;
+    --border: #e8ddd0;
+    --complete-green: #4caf7d;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--cream); font-family: 'DM Sans', sans-serif; color: var(--text-dark); min-height: 100vh; padding: 40px 20px; }
+  .page { max-width: 780px; margin: 0 auto; }
+
+  .reset-banner { display: none; text-align: center; padding: 10px; background: linear-gradient(135deg,#fef9f0,#fdf4e4); border: 1px solid var(--gold-light); border-radius: 10px; margin-bottom: 20px; font-size: 13px; color: var(--soft-gold); font-weight: 500; }
+
+  .header { text-align: center; margin-bottom: 28px; padding-bottom: 24px; border-bottom: 1px solid var(--border); position: relative; }
+  .header::after { content:''; position:absolute; bottom:-1px; left:50%; transform:translateX(-50%); width:60px; height:2px; background:var(--soft-gold); }
+  .header-label { font-size:11px; font-weight:500; letter-spacing:3px; text-transform:uppercase; color:var(--soft-gold); margin-bottom:12px; }
+  .header h1 { font-family:'Playfair Display',serif; font-size:42px; font-weight:400; color:var(--text-dark); line-height:1.2; margin-bottom:10px; }
+  .header h1 em { font-style:italic; color:var(--soft-gold); }
+  .header-sub { font-size:14px; color:var(--text-light); font-weight:300; }
+
+  /* STREAK */
+  .streak-section { display:flex; align-items:center; justify-content:center; gap:12px; background:linear-gradient(135deg,#fef9f0,#fdf4e4); border:1px solid var(--gold-light); border-radius:16px; padding:16px 24px; margin-bottom:20px; }
+  .streak-flame { font-size:30px; }
+  .streak-info .streak-number { font-family:'Playfair Display',serif; font-size:30px; font-weight:600; color:var(--morning); line-height:1; }
+  .streak-info .streak-label { font-size:12px; color:var(--text-light); }
+  .streak-best { margin-left:auto; text-align:right; font-size:12px; color:var(--text-light); }
+  .streak-best strong { display:block; color:var(--soft-gold); font-size:18px; font-family:'Playfair Display',serif; }
+
+  /* PROGRESS */
+  .progress-section { background:var(--warm-white); border:1px solid var(--border); border-radius:16px; padding:20px 24px; margin-bottom:20px; box-shadow:0 2px 12px rgba(44,36,23,.04); }
+  .progress-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .progress-label { font-size:13px; font-weight:500; color:var(--text-mid); }
+  .progress-count { font-family:'Playfair Display',serif; font-size:20px; color:var(--soft-gold); }
+  .progress-bar-bg { height:10px; border-radius:10px; background:var(--border); overflow:hidden; }
+  .progress-bar-fill { height:100%; border-radius:10px; background:linear-gradient(90deg,var(--soft-gold),#e8c76a); transition:width .4s ease; width:0%; }
+  .progress-bar-fill.complete { background:linear-gradient(90deg,var(--complete-green),#7dd4a8); }
+  .progress-message { font-size:12px; color:var(--text-light); margin-top:8px; text-align:center; min-height:16px; font-style:italic; }
+
+  /* WEEK */
+  .week-section { background:var(--warm-white); border:1px solid var(--border); border-radius:16px; padding:20px 24px; margin-bottom:32px; box-shadow:0 2px 12px rgba(44,36,23,.04); }
+  .week-title { font-family:'Playfair Display',serif; font-size:16px; color:var(--text-mid); margin-bottom:14px; }
+  .week-days { display:flex; gap:6px; justify-content:space-between; }
+  .week-day { flex:1; text-align:center; border-radius:10px; padding:8px 4px; border:1px solid var(--border); background:white; }
+  .week-day.today { border-color:var(--soft-gold); background:linear-gradient(135deg,#fef9f0,#fdf4e4); }
+  .week-day.complete { background:linear-gradient(135deg,#edfaf3,#d4f0e4); border-color:var(--complete-green); }
+  .week-day.partial { background:linear-gradient(135deg,#fef9f0,#fdf4e4); border-color:var(--gold-light); }
+  .week-day-name { font-size:10px; font-weight:500; text-transform:uppercase; letter-spacing:1px; color:var(--text-light); margin-bottom:4px; }
+  .week-day.today .week-day-name { color:var(--soft-gold); }
+  .week-day-icon { font-size:16px; }
+  .week-day-pct { font-size:10px; color:var(--text-light); margin-top:2px; }
+
+  /* MEAL BLOCKS */
+  .meal-block { margin-bottom:28px; background:var(--warm-white); border-radius:16px; overflow:hidden; border:1px solid var(--border); box-shadow:0 2px 12px rgba(44,36,23,.04); transition:border-color .4s; }
+  .meal-block.all-done { border-color:var(--complete-green); }
+  .meal-header { display:flex; align-items:center; gap:16px; padding:18px 24px; border-bottom:1px solid var(--border); transition:background .4s; }
+  .meal-icon { width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+  .meal-title { font-family:'Playfair Display',serif; font-size:21px; font-weight:600; flex:1; transition:color .4s; }
+  .meal-badge { font-size:11px; font-weight:500; letter-spacing:1.5px; text-transform:uppercase; padding:4px 12px; border-radius:20px; opacity:.85; }
+  .meal-complete-badge { display:none; font-size:12px; font-weight:500; padding:4px 12px; border-radius:20px; background:#edfaf3; color:var(--complete-green); border:1px solid #b8ebd0; }
+  .meal-block.all-done .meal-complete-badge { display:block; }
+  .meal-block.all-done .meal-badge { display:none; }
+  .meal-block.all-done .meal-title { color:var(--complete-green); }
+  .meal-block.all-done .meal-header { background:linear-gradient(135deg,#edfaf3,#d4f0e4) !important; }
+
+  .morning .meal-header { background:linear-gradient(135deg,#fef3ee,#fde8df); }
+  .morning .meal-icon { background:#f4845f22; }
+  .morning .meal-title { color:var(--morning); }
+  .morning .meal-badge { background:#f4845f22; color:var(--morning); }
+  .lunch .meal-header { background:linear-gradient(135deg,#eef6f5,#ddf0ed); }
+  .lunch .meal-icon { background:#5ba89e22; }
+  .lunch .meal-title { color:var(--lunch); }
+  .lunch .meal-badge { background:#5ba89e22; color:var(--lunch); }
+  .dinner .meal-header { background:linear-gradient(135deg,#f2f0f8,#e8e4f5); }
+  .dinner .meal-icon { background:#7b6fa022; }
+  .dinner .meal-title { color:var(--dinner); }
+  .dinner .meal-badge { background:#7b6fa022; color:var(--dinner); }
+  .bedtime .meal-header { background:linear-gradient(135deg,#eaf0f5,#dce8f0); }
+  .bedtime .meal-icon { background:#3d5a7322; }
+  .bedtime .meal-title { color:var(--bedtime); }
+  .bedtime .meal-badge { background:#3d5a7322; color:var(--bedtime); }
+
+  .supplements { padding:6px 0; }
+  .supp-row { display:flex; align-items:center; padding:12px 24px; border-bottom:1px solid #f0ebe3; gap:14px; transition:background .15s; cursor:pointer; }
+  .supp-row:last-child { border-bottom:none; }
+  .supp-row:hover { background:#f5f0e8; }
+  .checkbox { width:22px; height:22px; border-radius:6px; border:1.5px solid var(--border); flex-shrink:0; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; background:white; }
+  .checkbox:hover { border-color:var(--soft-gold); }
+  .checkbox.checked { background:var(--soft-gold); border-color:var(--soft-gold); }
+  .checkbox.checked::after { content:'✓'; color:white; font-size:13px; font-weight:600; }
+  .supp-info { flex:1; }
+  .supp-name { font-size:15px; font-weight:500; color:var(--text-dark); margin-bottom:2px; display:flex; align-items:center; gap:6px; }
+  .info-btn { width:16px; height:16px; border-radius:50%; background:var(--border); color:var(--text-light); font-size:10px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; transition:background .2s; user-select:none; }
+  .info-btn:hover { background:var(--soft-gold); color:white; }
+  .supp-dose { font-size:12px; color:var(--text-light); font-weight:300; }
+  .supp-note { font-size:11px; padding:3px 10px; border-radius:10px; background:#f0ebe3; color:var(--text-mid); font-weight:400; white-space:nowrap; }
+  .supp-note.warning { background:#fef3ee; color:var(--morning); }
+
+  /* POPUP */
+  .popup-overlay { display:none; position:fixed; inset:0; background:rgba(44,36,23,.45); z-index:100; align-items:center; justify-content:center; padding:20px; }
+  .popup-overlay.active { display:flex; }
+  .popup { background:var(--warm-white); border-radius:20px; padding:28px; max-width:440px; width:100%; box-shadow:0 20px 60px rgba(44,36,23,.2); position:relative; animation:popIn .2s ease; }
+  @keyframes popIn { from{transform:scale(.9);opacity:0} to{transform:scale(1);opacity:1} }
+  .popup-close { position:absolute; top:16px; right:16px; width:28px; height:28px; border-radius:50%; background:var(--border); border:none; cursor:pointer; font-size:14px; color:var(--text-mid); display:flex; align-items:center; justify-content:center; }
+  .popup-close:hover { background:var(--soft-gold); color:white; }
+  .popup-name { font-family:'Playfair Display',serif; font-size:22px; color:var(--text-dark); margin-bottom:4px; }
+  .popup-dose-tag { display:inline-block; background:var(--gold-light); color:var(--text-mid); font-size:11px; padding:3px 10px; border-radius:10px; margin-bottom:14px; font-weight:500; }
+  .popup-why { font-size:13px; color:var(--text-mid); line-height:1.7; margin-bottom:14px; }
+  .popup-benefit { display:flex; gap:8px; align-items:flex-start; margin-bottom:8px; }
+  .popup-benefit-dot { color:var(--soft-gold); flex-shrink:0; margin-top:2px; }
+  .popup-benefit-text { font-size:13px; color:var(--text-mid); line-height:1.5; }
+
+  /* ALARM SECTION */
+  .alarm-section { background:var(--warm-white); border:1px solid var(--border); border-radius:16px; padding:20px 24px; margin-bottom:28px; box-shadow:0 2px 12px rgba(44,36,23,.04); }
+  .alarm-title { font-family:'Playfair Display',serif; font-size:16px; color:var(--text-mid); margin-bottom:6px; }
+  .alarm-subtitle { font-size:12px; color:var(--text-light); margin-bottom:16px; }
+  .alarm-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .alarm-card { border-radius:12px; padding:14px 16px; border:1px solid var(--border); background:white; }
+  .alarm-card-top { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .alarm-emoji { font-size:20px; }
+  .alarm-meal-name { font-weight:500; font-size:14px; }
+  .alarm-time-row { display:flex; gap:8px; align-items:center; }
+  .alarm-time-input { border:1px solid var(--border); border-radius:8px; padding:6px 10px; font-size:14px; font-family:'DM Sans',sans-serif; color:var(--text-dark); background:var(--cream); flex:1; outline:none; }
+  .alarm-time-input:focus { border-color:var(--soft-gold); }
+  .alarm-set-btn { padding:6px 14px; border-radius:8px; border:none; cursor:pointer; font-size:12px; font-weight:500; font-family:'DM Sans',sans-serif; transition:all .2s; white-space:nowrap; }
+  .alarm-set-btn:hover { opacity:.85; }
+  .alarm-set-btn.set { background:var(--soft-gold); color:white; }
+  .alarm-set-btn.active { background:var(--complete-green); color:white; }
+  .alarm-status { font-size:11px; color:var(--text-light); margin-top:6px; min-height:14px; font-style:italic; }
+
+  /* morning card */
+  .alarm-card.morning-card { border-color:#fde8df; background:linear-gradient(135deg,#fff8f5,#fef3ee); }
+  .alarm-card.morning-card .alarm-meal-name { color:var(--morning); }
+  .alarm-card.morning-card .alarm-set-btn.set { background:var(--morning); }
+  /* lunch card */
+  .alarm-card.lunch-card { border-color:#ddf0ed; background:linear-gradient(135deg,#f5fbfa,#eef6f5); }
+  .alarm-card.lunch-card .alarm-meal-name { color:var(--lunch); }
+  .alarm-card.lunch-card .alarm-set-btn.set { background:var(--lunch); }
+  /* dinner card */
+  .alarm-card.dinner-card { border-color:#e8e4f5; background:linear-gradient(135deg,#f8f7fc,#f2f0f8); }
+  .alarm-card.dinner-card .alarm-meal-name { color:var(--dinner); }
+  .alarm-card.dinner-card .alarm-set-btn.set { background:var(--dinner); }
+  /* bedtime card */
+  .alarm-card.bedtime-card { border-color:#dce8f0; background:linear-gradient(135deg,#f4f8fb,#eaf0f5); }
+  .alarm-card.bedtime-card .alarm-meal-name { color:var(--bedtime); }
+  .alarm-card.bedtime-card .alarm-set-btn.set { background:var(--bedtime); }
+
+  .alarm-note { font-size:11px; color:var(--text-light); margin-top:12px; text-align:center; font-style:italic; }
+
+  .notes-section { margin-top:28px; padding:22px 24px; background:linear-gradient(135deg,#fef9f0,#fdf4e4); border-radius:16px; border:1px solid var(--gold-light); }
+  .notes-title { font-family:'Playfair Display',serif; font-size:18px; color:var(--soft-gold); margin-bottom:14px; }
+  .note-item { display:flex; gap:10px; margin-bottom:10px; font-size:13px; color:var(--text-mid); line-height:1.6; align-items:flex-start; }
+  .note-dot { color:var(--soft-gold); margin-top:2px; flex-shrink:0; }
+  .footer { text-align:center; margin-top:36px; padding-top:20px; border-top:1px solid var(--border); font-size:12px; color:var(--text-light); font-style:italic; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="reset-banner" id="resetBanner">✨ Good morning! A new day — your checklist has been reset.</div>
+
+  <div class="header">
+    <div class="header-label">Daily Wellness Protocol</div>
+    <h1>Your <em>Daily</em> Schedule</h1>
+    <div class="header-sub">Tap each supplement as you take it · tap ⓘ to learn why</div>
+  </div>
+
+  <div class="streak-section">
+    <div class="streak-flame">🔥</div>
+    <div class="streak-info">
+      <div class="streak-number" id="streakCount">0</div>
+      <div class="streak-label">day streak</div>
+    </div>
+    <div class="streak-best">
+      <strong id="bestStreak">0</strong>
+      personal best
+    </div>
+  </div>
+
+  <div class="progress-section">
+    <div class="progress-top">
+      <div class="progress-label">Today's Progress</div>
+      <div class="progress-count"><span id="doneCount">0</span> / <span id="totalCount">0</span></div>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+    <div class="progress-message" id="progressMsg">Let's start your wellness journey today! 🌿</div>
+  </div>
+
+  <div class="week-section">
+    <div class="week-title">This Week</div>
+    <div class="week-days" id="weekDays"></div>
+  </div>
+
+  <!-- BREAKFAST -->
+  <div class="meal-block morning" id="meal-breakfast">
+    <div class="meal-header">
+      <div class="meal-icon">🌅</div>
+      <div class="meal-title">Breakfast</div>
+      <div class="meal-badge">With Food</div>
+      <div class="meal-complete-badge">✓ Complete!</div>
+    </div>
+    <div class="supplements">
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">AHCC Kinoko Platinum <span class="info-btn" onclick="showInfo(event,'AHCC Kinoko Platinum','2 capsules — 1,500mg','AHCC is backed by 30+ human clinical studies. It powerfully activates Natural Killer cells and macrophages — the front-line soldiers of the immune system. It synergizes with D3+K2, zinc, and NAC in this stack.',['Activates Natural Killer cells and macrophages','30+ human clinical studies','Synergizes with D3, zinc, and NAC in this stack','Best absorbed on empty stomach'])">i</span></div><div class="supp-dose">2 capsules — 1,500mg</div></div><div class="supp-note warning">30 min before eating</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Probiotic Mood+ <span class="info-btn" onclick="showInfo(event,'Garden of Life Probiotic Mood+','1 capsule — 50 Billion CFU, 16 strains','The gut produces ~90% of the body\'s serotonin. This probiotic was specifically formulated with strains shown to support emotional wellbeing and the gut-brain axis — directly relevant to OCD and mood.',['16 strains targeting gut-brain mood connection','50 Billion CFU guaranteed potency','Promotes emotional wellbeing and relaxation','Best taken before food for optimal colonization'])">i</span></div><div class="supp-dose">1 capsule — 50 Billion CFU</div></div><div class="supp-note warning">Before eating</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">ConcenTrace Minerals <span class="info-btn" onclick="showInfo(event,'ConcenTrace Trace Mineral Drops','Per label — in water','Provides 72+ ionic trace minerals depleted in modern diets. These are essential cofactors for hundreds of enzyme reactions including neurotransmitter production, energy metabolism, and brain function.',['72+ ionic trace minerals in bioavailable form','Essential cofactors for neurotransmitter synthesis','Supports hydration and sustained energy','Foundation supplement for overall health'])">i</span></div><div class="supp-dose">Per label — in water</div></div><div class="supp-note warning">Before eating</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Methylfolate 5-MTHF <span class="info-btn" onclick="showInfo(event,'Methylfolate 5-MTHF + B6 + B12','½ serving — 7.5mg (dose 1 of 2)','The only folate form that crosses the blood-brain barrier. Essential for producing serotonin, dopamine, and norepinephrine — the neurotransmitters directly involved in OCD. The included B6 and Methyl B12 complete the methylation cycle.',['Only folate that crosses blood-brain barrier','Directly supports serotonin and dopamine production','Includes B6 and Methyl B12 for complete methylation','Split dosing maintains steady brain levels all day'])">i</span></div><div class="supp-dose">½ serving — 7.5mg (dose 1 of 2)</div></div><div class="supp-note">With food</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Zinc <span class="info-btn" onclick="showInfo(event,'Zinc 50mg','1 tablet — 50mg (dose 1 of 2, 100mg total)','OCD patients commonly have lower zinc levels. This 3-month therapeutic protocol at 100mg/day supports neurotransmitter regulation and brain health. Copper is taken at lunch to prevent zinc-induced copper depletion — never take together.',['Neurotransmitter regulation linked to OCD','3-month therapeutic protocol at 100mg/day','Immune system and cellular function support','Copper MUST be taken at lunch to balance'])">i</span></div><div class="supp-dose">1 tablet — 50mg (dose 1 of 2)</div></div><div class="supp-note">With food</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Omega-3 Fish Oil <span class="info-btn" onclick="showInfo(event,'Triple Strength Omega-3','3 capsules — 4,200mg (1,200mg EPA + 900mg DHA)','Therapeutic-strength omega-3. EPA reduces brain inflammation and is strongly linked to mood improvement. DHA is the primary structural fat in brain cell membranes. Wild-caught, triple-strength, burpless formula.',['EPA reduces neuroinflammation linked to OCD','DHA is primary brain structural fat','Research-backed dose for mood and mental health','Wild-caught, burpless lemon flavor'])">i</span></div><div class="supp-dose">3 capsules — 4,200mg</div></div><div class="supp-note">With fat</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Vitamin D3 + K2 <span class="info-btn" onclick="showInfo(event,'Vitamin D3 5,000 IU + K2 100mcg','1 capsule — therapeutic dose','Deficiency is extremely common and strongly linked to anxiety, depression, and weakened immunity. D3 at 5,000 IU is the therapeutic dose. K2 ensures calcium is properly directed and also independently supports brain health.',['Deficiency strongly linked to anxiety and OCD','5,000 IU is the therapeutic neurological dose','K2 supports proper calcium metabolism','Must take with fat-containing meal'])">i</span></div><div class="supp-dose">5,000 IU + 100mcg</div></div><div class="supp-note">With fat</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Nicotinamide Riboside (NR) <span class="info-btn" onclick="showInfo(event,'Nicotinamide Riboside (NR)','500mg — Double Wood Supplements','NR boosts NAD+ — a molecule essential for cellular energy that declines with age. More human clinical trials than any other NAD precursor. Synergizes with resveratrol (in dinner I3C supplement) for longevity support.',['Most clinically studied NAD+ precursor','Boosts cellular energy and mitochondrial function','Synergizes with resveratrol taken at dinner','FDA GRAS status — well established safety'])">i</span></div><div class="supp-dose">500mg</div></div><div class="supp-note">With food</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Green Tea EGCG <span class="info-btn" onclick="showInfo(event,'Green Tea EGCG Extract','1 capsule — 5,000mg (20:1 extract, 98% polyphenols)','EGCG is the most potent antioxidant in green tea. At this 20:1 extract concentration it provides powerful neuroprotection, reduces brain inflammation, and supports healthy energy metabolism.',['Powerful neuroprotective antioxidant','Reduces brain inflammation','Supports healthy metabolism and energy','Synergizes with curcumin for anti-inflammatory effect'])">i</span></div><div class="supp-dose">1 capsule — 5,000mg extract</div></div><div class="supp-note">With food</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Maca Root Complex <span class="info-btn" onclick="showInfo(event,'Maca Root Complex','Per label — 5,000mg (Red, Black, Yellow + Ashwagandha, Ginseng, Tongkat Ali)','This comprehensive adaptogen blend supports hormonal balance, libido, energy, and vitality. Red, black, and yellow maca each target different aspects of health. The addition of panax ginseng and tongkat ali makes this a complete female vitality formula.',['Supports healthy female hormone balance','Boosts libido and sexual vitality','Panax ginseng for cognitive function and energy','Tongkat ali supports hormonal health'])">i</span></div><div class="supp-dose">Per label</div></div><div class="supp-note">With food</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">NAC <span class="info-btn" onclick="showInfo(event,'N-Acetyl Cysteine (NAC)','1,200mg (dose 1 of 2, 2,400mg total)','The most evidence-backed supplement for OCD. Regulates glutamate — the brain chemical directly implicated in OCD and compulsive behavior. Clinical studies used 2,400–3,000mg/day and showed significant symptom reduction.',['#1 most evidence-backed supplement for OCD','Regulates glutamate linked to OCD and compulsions','Powerful antioxidant that supports overall brain health','Dose 1 of 2 — second dose at dinner'])">i</span></div><div class="supp-dose">1,200mg (dose 1 of 2)</div></div><div class="supp-note">With food</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Curcumin + BioPerine <span class="info-btn" onclick="showInfo(event,'High Absorption Curcumin + BioPerine','500mg (dose 1 of 2, 1,000mg total)','Curcumin is one of the most powerful natural anti-inflammatories. BioPerine increases its absorption by up to 2,000%. Brain inflammation is a contributing factor in OCD and anxiety. Pairs synergistically with EGCG.',['Potent anti-inflammatory for brain and body','BioPerine increases absorption up to 2,000%','Brain inflammation linked to OCD and anxiety','Synergizes with EGCG for maximum effect'])">i</span></div><div class="supp-dose">500mg (dose 1 of 2)</div></div><div class="supp-note">With fat</div></div>
+    </div>
+  </div>
+
+  <!-- LUNCH -->
+  <div class="meal-block lunch" id="meal-lunch">
+    <div class="meal-header">
+      <div class="meal-icon">☀️</div>
+      <div class="meal-title">Lunch</div>
+      <div class="meal-badge">With Food</div>
+      <div class="meal-complete-badge">✓ Complete!</div>
+    </div>
+    <div class="supplements">
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Copper Glycinate <span class="info-btn" onclick="showInfo(event,'Copper Glycinate','3 capsules — 9mg (lunch ONLY)','MUST be taken at lunch — never with zinc at breakfast or dinner. High-dose zinc depletes copper, which can cause serious neurological symptoms. This copper dose counterbalances the 100mg/day zinc protocol. Critical to take consistently.',['Essential counterbalance to high-dose zinc protocol','Prevents copper deficiency and neurological risk','Supports iron metabolism and energy production','NEVER take at same time as zinc — lunch only'])">i</span></div><div class="supp-dose">3 capsules — 9mg</div></div><div class="supp-note warning">⚠️ Never with zinc</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Methylfolate 5-MTHF <span class="info-btn" onclick="showInfo(event,'Methylfolate 5-MTHF + B6 + B12','½ serving — 7.5mg (dose 2 of 2, 15mg total)','Second split dose to maintain steady blood-brain levels all day. Methylfolate has a short half-life so splitting doses is more effective than one large morning dose.',['Maintains steady brain folate levels throughout day','Short half-life requires split dosing for best effect','Continues supporting serotonin production into afternoon','Dose 2 of 2 — completes 15mg daily total'])">i</span></div><div class="supp-dose">½ serving — 7.5mg (dose 2 of 2)</div></div><div class="supp-note">With food</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Inositol <span class="info-btn" onclick="showInfo(event,'Inositol Powder','6g — mix in water (dose 1 of 2, 12g total)','One of the most remarkable supplements for OCD. Clinical trials at 12–18g/day showed results rivaling prescription medications. Works by sensitizing serotonin receptors in the brain. Stir into water, juice, or a smoothie.',['Clinical trials show OCD benefit rivaling medication','Works by sensitizing brain serotonin receptors','Also benefits anxiety, depression, and OCD','Mix in water — mild naturally sweet taste'])">i</span></div><div class="supp-dose">6g powder — mix in water (dose 1 of 2)</div></div><div class="supp-note">With food</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">L-Theanine <span class="info-btn" onclick="showInfo(event,'L-Theanine','200mg','Amino acid from green tea that promotes calm focused alertness without drowsiness. Increases alpha brain waves — the same mental state achieved during meditation. Balances any stimulating effects from morning green tea.',['Promotes calm focus without sedation','Increases alpha brain waves — meditative calm','Balances caffeine from morning green tea','Reduces anxiety and racing thoughts'])">i</span></div><div class="supp-dose">200mg</div></div><div class="supp-note">With food</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Fenugreek <span class="info-btn" onclick="showInfo(event,'Fenugreek','1 capsule — 500mg (dose 1 of 2, 1,000mg total)','Supports healthy hormone balance and female libido. Works by supporting healthy testosterone and estrogen levels. Pairs powerfully with maca, tongkat ali, and saffron already in the stack.',['Supports healthy female libido and desire','Balances estrogen and testosterone levels','Works synergistically with maca and tongkat ali','Dose 1 of 2 — second dose at dinner'])">i</span></div><div class="supp-dose">1 capsule — 500mg (dose 1 of 2)</div></div><div class="supp-note">With food</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Beta-Carotene <span class="info-btn" onclick="showInfo(event,'Beta-Carotene','25,000 IU — take with fat','Safe precursor form of Vitamin A that converts only as needed. Powerful antioxidant for immune support, skin health, and cellular protection. Unlike preformed Vitamin A, Beta-Carotene is safe at this dose.',['Safe — converts to Vitamin A only as needed','Powerful antioxidant for cellular protection','Supports immune function alongside AHCC and D3','Must take with fat-containing meal'])">i</span></div><div class="supp-dose">25,000 IU</div></div><div class="supp-note">With fat</div></div>
+    </div>
+  </div>
+
+  <!-- DINNER -->
+  <div class="meal-block dinner" id="meal-dinner">
+    <div class="meal-header">
+      <div class="meal-icon">🍽️</div>
+      <div class="meal-title">Dinner</div>
+      <div class="meal-badge">With Food</div>
+      <div class="meal-complete-badge">✓ Complete!</div>
+    </div>
+    <div class="supplements">
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">AHCC Kinoko Platinum <span class="info-btn" onclick="showInfo(event,'AHCC Kinoko Platinum','2 capsules — 1,500mg (dose 2 of 2, 3,000mg total)','Second AHCC dose completing the 3g/day therapeutic total. Evening dosing provides overnight immune coverage. The 3g/day split is the dose used in serious clinical immune research.',['Completes 3g/day therapeutic immune dose','Evening dose provides overnight immune support','30+ clinical studies support this dose level','Always take 30 min before eating'])">i</span></div><div class="supp-dose">2 capsules — 1,500mg (dose 2 of 2)</div></div><div class="supp-note warning">30 min before eating</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Zinc <span class="info-btn" onclick="showInfo(event,'Zinc 50mg','1 tablet — 50mg (dose 2 of 2, 100mg total)','Completes the 100mg/day therapeutic zinc protocol. Evening dosing supports overnight brain repair and neurotransmitter production. Copper was taken at lunch to counterbalance.',['Completes the 100mg/day OCD support protocol','Supports overnight brain repair and restoration','Neurotransmitter and immune function support','Copper at lunch counterbalances this dose'])">i</span></div><div class="supp-dose">1 tablet — 50mg (dose 2 of 2)</div></div><div class="supp-note">With food</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">NAC <span class="info-btn" onclick="showInfo(event,'N-Acetyl Cysteine (NAC)','1,200mg (dose 2 of 2, 2,400mg total)','Completes the 2,400mg/day therapeutic OCD dose. Evening NAC maintains glutamate regulation overnight — important as the brain is consolidating memories and emotional experiences during sleep.',['Completes 2,400mg therapeutic OCD dose','Maintains overnight glutamate regulation','Supports brain detoxification during sleep','Most evidence-backed supplement in this stack'])">i</span></div><div class="supp-dose">1,200mg (dose 2 of 2)</div></div><div class="supp-note">With food</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Inositol <span class="info-btn" onclick="showInfo(event,'Inositol Powder','6g — mix in water (dose 2 of 2, 12g total)','Completes 12g/day clinical trial dose. Evening inositol has a calming effect that reduces anxiety and supports better sleep quality — ideal for winding down.',['Completes 12g/day clinical OCD trial dose','Evening dose supports calm and better sleep','Calming effect reduces evening anxiety','Serotonin receptor support continues overnight'])">i</span></div><div class="supp-dose">6g powder — mix in water (dose 2 of 2)</div></div><div class="supp-note">With food</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Saffron+ Advanced <span class="info-btn" onclick="showInfo(event,'Saffron+ Advanced (Micro Ingredients)','Per label — contains Saffron, KSM-66, Magnesium Glycinate, Turmeric','A powerhouse combination for OCD and mood. Saffron extract shown in clinical studies to be as effective as fluvoxamine (a standard OCD prescription drug). KSM-66 reduces cortisol. Magnesium calms the nervous system. Turmeric fights inflammation.',['Saffron shown equal to OCD prescription drug in studies','KSM-66 reduces cortisol and stress response','Magnesium glycinate calms nervous system','Turmeric adds anti-inflammatory synergy'])">i</span></div><div class="supp-dose">Per label</div></div><div class="supp-note">With food</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">KSM-66 Ashwagandha <span class="info-btn" onclick="showInfo(event,'KSM-66 Ashwagandha','500mg (dose 1 of 2, 1,000mg total daily)','KSM-66 is the most researched ashwagandha extract. At 1,000mg/day it significantly reduces cortisol and anxiety. Dinner dose lets it begin working as the evening winds down, preparing for the bedtime dose.',['Most studied ashwagandha extract available','1,000mg/day reduces cortisol significantly','Supports thyroid function and adrenal health','Dose 1 of 2 — second dose at bedtime'])">i</span></div><div class="supp-dose">500mg (dose 1 of 2)</div></div><div class="supp-note">With food</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Fenugreek <span class="info-btn" onclick="showInfo(event,'Fenugreek','1 capsule — 500mg (dose 2 of 2, 1,000mg total)','Completes the 1,000mg/day hormonal support dose. Evening dosing supports overnight hormonal regulation and restoration.',['Completes 1,000mg/day hormonal support dose','Evening dose supports overnight hormone balance','Builds cumulative benefit with consistent daily use','Pairs powerfully with maca and saffron in stack'])">i</span></div><div class="supp-dose">1 capsule — 500mg (dose 2 of 2)</div></div><div class="supp-note">With food</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Indole-3-Carbinol + Resveratrol <span class="info-btn" onclick="showInfo(event,'Indole-3-Carbinol + Resveratrol','300mg — once daily at dinner','I3C supports healthy estrogen metabolism and cellular protection. The resveratrol component is a powerful longevity compound that directly synergizes with the NR (Nicotinamide Riboside) taken each morning for NAD+ support.',['Supports healthy estrogen metabolism','Resveratrol synergizes with morning NR for longevity','Cellular protection and anti-aging support','Once daily — dinner is optimal for absorption'])">i</span></div><div class="supp-dose">300mg — once daily</div></div><div class="supp-note">With food</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Curcumin + BioPerine <span class="info-btn" onclick="showInfo(event,'High Absorption Curcumin + BioPerine','500mg (dose 2 of 2, 1,000mg total)','Completes 1,000mg/day therapeutic curcumin dose. Evening curcumin reduces overnight neuroinflammation and supports overnight recovery and cellular repair.',['Completes 1,000mg/day anti-inflammatory dose','Reduces neuroinflammation during overnight recovery','BioPerine ensures maximum absorption at both doses','Synergizes with morning EGCG throughout the day'])">i</span></div><div class="supp-dose">500mg (dose 2 of 2)</div></div><div class="supp-note">With fat</div></div>
+    </div>
+  </div>
+
+  <!-- BEDTIME -->
+  <div class="meal-block bedtime" id="meal-bedtime">
+    <div class="meal-header">
+      <div class="meal-icon">🌙</div>
+      <div class="meal-title">Bedtime</div>
+      <div class="meal-badge">Before Sleep</div>
+      <div class="meal-complete-badge">✓ Complete!</div>
+    </div>
+    <div class="supplements">
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Magnesium Glycinate <span class="info-btn" onclick="showInfo(event,'Magnesium Glycinate','200–400mg at bedtime','The most calming mineral for the nervous system. The glycinate form is the most bioavailable and gentlest on the stomach. Deficiency is extremely common. At bedtime it promotes deep restorative sleep and reduces muscle tension and anxiety.',['Most calming mineral for nervous system hyperactivity','Glycinate form — most bioavailable, gentlest on stomach','Promotes deep restorative sleep','Reduces anxiety and physical tension'])">i</span></div><div class="supp-dose">200–400mg</div></div><div class="supp-note">Sleep support</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">KSM-66 Ashwagandha <span class="info-btn" onclick="showInfo(event,'KSM-66 Ashwagandha','500mg (dose 2 of 2, 1,000mg total)','Final ashwagandha dose. Bedtime is ideal — it lowers cortisol that built up during the day and promotes deep sleep. Research shows KSM-66 at 1,000mg/day significantly improves sleep quality, sleep onset time, and sleep efficiency.',['Completes 1,000mg/day therapeutic dose','Lowers evening cortisol for easier sleep onset','Clinically shown to improve sleep quality','Pairs perfectly with magnesium at bedtime'])">i</span></div><div class="supp-dose">500mg (dose 2 of 2)</div></div><div class="supp-note">Stress + sleep</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">5-HTP <span class="info-btn" onclick="showInfo(event,'5-HTP','100mg — bedtime only','5-HTP converts directly to serotonin in the brain. Bedtime is ideal as serotonin converts to melatonin for deep sleep. Research supports OCD and anxiety reduction. CRITICAL WARNING: never take if on any SSRI or antidepressant — risk of serotonin syndrome.',['Direct serotonin precursor — fast conversion','Supports melatonin production for deep sleep','Research supports OCD and anxiety reduction','⚠️ NEVER take with SSRIs or antidepressants'])">i</span></div><div class="supp-dose">100mg</div></div><div class="supp-note warning">⚠️ Only if NOT on SSRIs</div></div>
+    </div>
+  </div>
+
+  <!-- ALARMS -->
+  <div class="alarm-section">
+    <div class="alarm-title">⏰ Set Daily Reminders</div>
+    <div class="alarm-subtitle">Set a time for each meal — your browser will notify you when it's time to take your supplements</div>
+    <div class="alarm-grid">
+      <div class="alarm-card morning-card">
+        <div class="alarm-card-top"><div class="alarm-emoji">🌅</div><div class="alarm-meal-name">Breakfast</div></div>
+        <div class="alarm-time-row">
+          <input type="time" class="alarm-time-input" id="alarm-breakfast" value="08:00">
+          <button class="alarm-set-btn set" onclick="setAlarm('breakfast','🌅 Breakfast Supplements','Time for your breakfast supplements! 💊')">Set</button>
+        </div>
+        <div class="alarm-status" id="status-breakfast"></div>
+      </div>
+      <div class="alarm-card lunch-card">
+        <div class="alarm-card-top"><div class="alarm-emoji">☀️</div><div class="alarm-meal-name">Lunch</div></div>
+        <div class="alarm-time-row">
+          <input type="time" class="alarm-time-input" id="alarm-lunch" value="12:00">
+          <button class="alarm-set-btn set" onclick="setAlarm('lunch','☀️ Lunch Supplements','Time for your lunch supplements! 💊')">Set</button>
+        </div>
+        <div class="alarm-status" id="status-lunch"></div>
+      </div>
+      <div class="alarm-card dinner-card">
+        <div class="alarm-card-top"><div class="alarm-emoji">🍽️</div><div class="alarm-meal-name">Dinner</div></div>
+        <div class="alarm-time-row">
+          <input type="time" class="alarm-time-input" id="alarm-dinner" value="18:00">
+          <button class="alarm-set-btn set" onclick="setAlarm('dinner','🍽️ Dinner Supplements','Time for your dinner supplements! 💊')">Set</button>
+        </div>
+        <div class="alarm-status" id="status-dinner"></div>
+      </div>
+      <div class="alarm-card bedtime-card">
+        <div class="alarm-card-top"><div class="alarm-emoji">🌙</div><div class="alarm-meal-name">Bedtime</div></div>
+        <div class="alarm-time-row">
+          <input type="time" class="alarm-time-input" id="alarm-bedtime" value="21:00">
+          <button class="alarm-set-btn set" onclick="setAlarm('bedtime','🌙 Bedtime Supplements','Time for your bedtime supplements! 💊')">Set</button>
+        </div>
+        <div class="alarm-status" id="status-bedtime"></div>
+      </div>
+    </div>
+    <div class="alarm-note" id="alarm-note">Tap Set on any alarm — your browser will ask permission to send notifications</div>
+  </div>
+
+  <div class="notes-section">
+    <div class="notes-title">⚠️ Important Reminders</div>
+    <div class="note-item"><span class="note-dot">◆</span><span><strong>AHCC</strong> — Take 30 minutes before breakfast and dinner on an empty stomach for best absorption</span></div>
+    <div class="note-item"><span class="note-dot">◆</span><span><strong>Zinc & Copper</strong> — Never take together. Zinc at breakfast & dinner only. Copper at lunch only</span></div>
+    <div class="note-item"><span class="note-dot">◆</span><span><strong>5-HTP</strong> — Do NOT take if you are on any antidepressant or SSRI medication</span></div>
+    <div class="note-item"><span class="note-dot">◆</span><span><strong>Fat-soluble supplements</strong> — Omega-3, D3+K2, Beta-Carotene, and Curcumin must be taken with a meal containing healthy fats</span></div>
+    <div class="note-item"><span class="note-dot">◆</span><span><strong>Blood work</strong> — Get baseline zinc + copper + CBC levels before starting, recheck at 6 weeks</span></div>
+  </div>
+
+  <div class="footer">Always consult your physician before starting any new supplement protocol · This schedule is for wellness support only</div>
+</div>
+
+<div class="popup-overlay" id="popupOverlay" onclick="closePopup(event)">
+  <div class="popup">
+    <button class="popup-close" onclick="document.getElementById('popupOverlay').classList.remove('active')">✕</button>
+    <div class="popup-name" id="popupName"></div>
+    <div class="popup-dose-tag" id="popupDose"></div>
+    <div class="popup-why" id="popupWhy"></div>
+    <div id="popupBenefits"></div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'supp_v3';
+  const DATE_KEY = 'supp_date_v3';
+  const WEEK_KEY = 'supp_week_v3';
+  const STREAK_KEY = 'supp_streak_v3';
+  const BEST_KEY = 'supp_best_v3';
+
+  const TOTAL = document.querySelectorAll('.checkbox').length;
+  document.getElementById('totalCount').textContent = TOTAL;
+
+  const MSGS = [
+    "Let's start your wellness journey today! 🌿",
+    "Great start — keep the momentum! 💪",
+    "You're doing amazing! 🌟",
+    "Halfway there — crushing it! ⚡",
+    "Almost done — so close! 🎯",
+    "🎉 Perfect day! Every supplement taken!"
+  ];
+
+  function getToday() { return new Date().toDateString(); }
+  function getDateStr(n=0) { const d=new Date(); d.setDate(d.getDate()-n); return d.toDateString(); }
+  function getDayName(n=0) { const d=new Date(); d.setDate(d.getDate()-n); return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()]; }
+
+  function safeGet(k) { try { return localStorage.getItem(k); } catch(e) { return null; } }
+  function safeSet(k,v) { try { localStorage.setItem(k,v); } catch(e) {} }
+
+  function updateUI(done) {
+    const pct = TOTAL>0 ? (done/TOTAL)*100 : 0;
+    const fill = document.getElementById('progressFill');
+    fill.style.width = pct+'%';
+    fill.classList.toggle('complete', done===TOTAL);
+    document.getElementById('doneCount').textContent = done;
+    const idx = done===0?0 : done===TOTAL?5 : Math.min(Math.ceil((done/TOTAL)*4),4);
+    document.getElementById('progressMsg').textContent = MSGS[idx];
+  }
+
+  function updateMealCompletion() {
+    ['breakfast','lunch','dinner','bedtime'].forEach(meal => {
+      const block = document.getElementById('meal-'+meal);
+      if (!block) return;
+      const boxes = block.querySelectorAll('.checkbox');
+      block.classList.toggle('all-done', Array.from(boxes).every(cb=>cb.classList.contains('checked')));
+    });
+  }
+
+  function updateWeekView() {
+    const weekData = JSON.parse(safeGet(WEEK_KEY)||'{}');
+    const container = document.getElementById('weekDays');
+    container.innerHTML = '';
+    for (let i=6; i>=0; i--) {
+      const dateStr = getDateStr(i);
+      const pct = weekData[dateStr];
+      const isToday = i===0;
+      const div = document.createElement('div');
+      div.className = 'week-day'+(isToday?' today':'')+(pct===100?' complete':pct>0?' partial':'');
+      const icon = pct===100?'✅':pct>0?'🌗':isToday?'⭐':'○';
+      div.innerHTML = `<div class="week-day-name">${getDayName(i)}</div><div class="week-day-icon">${icon}</div><div class="week-day-pct">${pct!==undefined?pct+'%':'--'}</div>`;
+      container.appendChild(div);
+    }
+  }
+
+  function updateStreak(done) {
+    if (done !== TOTAL) return;
+    const weekData = JSON.parse(safeGet(WEEK_KEY)||'{}');
+    if (weekData[getToday()] === 100) return; // already counted
+
+    const yest = getDateStr(1);
+    let streak = parseInt(safeGet(STREAK_KEY)||'0');
+    const yesterdayDone = (JSON.parse(safeGet(WEEK_KEY)||'{}')[yest]||0) === 100;
+    streak = yesterdayDone ? streak+1 : 1;
+    let best = parseInt(safeGet(BEST_KEY)||'0');
+    if (streak>best) best=streak;
+    safeSet(STREAK_KEY, streak);
+    safeSet(BEST_KEY, best);
+    document.getElementById('streakCount').textContent = streak;
+    document.getElementById('bestStreak').textContent = best;
+  }
+
+  function saveState() {
+    const checkboxes = document.querySelectorAll('.checkbox');
+    const state = Array.from(checkboxes).map(cb=>cb.classList.contains('checked'));
+    const done = state.filter(Boolean).length;
+    safeSet(STORAGE_KEY, JSON.stringify(state));
+    safeSet(DATE_KEY, getToday());
+
+    const weekData = JSON.parse(safeGet(WEEK_KEY)||'{}');
+    weekData[getToday()] = Math.round((done/TOTAL)*100);
+    safeSet(WEEK_KEY, JSON.stringify(weekData));
+
+    updateUI(done);
+    updateMealCompletion();
+    updateWeekView();
+    updateStreak(done);
+  }
+
+  function loadState() {
+    const streak = parseInt(safeGet(STREAK_KEY)||'0');
+    const best = parseInt(safeGet(BEST_KEY)||'0');
+    document.getElementById('streakCount').textContent = streak;
+    document.getElementById('bestStreak').textContent = best;
+
+    const lastDate = safeGet(DATE_KEY);
+    const today = getToday();
+    if (lastDate !== today) {
+      if (lastDate) { const b=document.getElementById('resetBanner'); b.style.display='block'; setTimeout(()=>b.style.display='none',5000); }
+      safeSet(DATE_KEY, today);
+      updateUI(0); updateWeekView(); return;
+    }
+    const saved = safeGet(STORAGE_KEY);
+    if (saved) {
+      const state = JSON.parse(saved);
+      document.querySelectorAll('.checkbox').forEach((cb,i)=>{ if(state[i]) cb.classList.add('checked'); });
+      updateUI(state.filter(Boolean).length);
+      updateMealCompletion();
+    } else { updateUI(0); }
+    updateWeekView();
+  }
+
+  function toggleCheck(row) {
+    row.querySelector('.checkbox').classList.toggle('checked');
+    saveState();
+  }
+
+  function showInfo(e, name, dose, why, benefits) {
+    e.stopPropagation();
+    document.getElementById('popupName').textContent = name;
+    document.getElementById('popupDose').textContent = dose;
+    document.getElementById('popupWhy').textContent = why;
+    document.getElementById('popupBenefits').innerHTML = benefits.map(b=>`<div class="popup-benefit"><span class="popup-benefit-dot">◆</span><span class="popup-benefit-text">${b}</span></div>`).join('');
+    document.getElementById('popupOverlay').classList.add('active');
+  }
+
+  function closePopup(e) { if(e.target===document.getElementById('popupOverlay')) document.getElementById('popupOverlay').classList.remove('active'); }
+
+  // ── ALARMS ──
+  const alarmTimers = {};
+  const ALARM_KEY = 'supp_alarms_v3';
+
+  function formatTime12(val) {
+    if (!val) return '';
+    const [h, m] = val.split(':').map(Number);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const h12 = h % 12 || 12;
+    return `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+  }
+
+  function setAlarm(meal, title, body) {
+    const input = document.getElementById('alarm-' + meal);
+    const btn = input.parentElement.querySelector('.alarm-set-btn');
+    const status = document.getElementById('status-' + meal);
+    const val = input.value;
+    if (!val) { status.textContent = 'Please enter a time first'; return; }
+
+    // Cancel existing timer
+    if (alarmTimers[meal]) { clearTimeout(alarmTimers[meal]); clearInterval(alarmTimers[meal+'_interval']); }
+
+    if (!('Notification' in window)) {
+      // Fallback — save time and show status only
+      saveAlarmTimes();
+      btn.className = 'alarm-set-btn active';
+      btn.textContent = '✓ Set';
+      status.textContent = `Reminder set for ${formatTime12(val)}`;
+      scheduleAlarm(meal, val, title, body, btn, status);
+      return;
+    }
+
+    if (Notification.permission === 'granted') {
+      scheduleAlarm(meal, val, title, body, btn, status);
+      btn.className = 'alarm-set-btn active';
+      btn.textContent = '✓ Set';
+      status.textContent = `Reminder set for ${formatTime12(val)}`;
+      saveAlarmTimes();
+    } else if (Notification.permission !== 'denied') {
+      Notification.requestPermission().then(perm => {
+        if (perm === 'granted') {
+          scheduleAlarm(meal, val, title, body, btn, status);
+          btn.className = 'alarm-set-btn active';
+          btn.textContent = '✓ Set';
+          status.textContent = `Reminder set for ${formatTime12(val)}`;
+          saveAlarmTimes();
+          document.getElementById('alarm-note').textContent = '✅ Notifications enabled! Your reminders are set.';
+        } else {
+          status.textContent = 'Notifications blocked — enable in browser settings';
+          document.getElementById('alarm-note').textContent = '⚠️ To enable: tap the lock icon in your browser address bar → Notifications → Allow';
+        }
+      });
+    } else {
+      status.textContent = '⚠️ Notifications blocked — check browser settings';
+    }
+  }
+
+  function scheduleAlarm(meal, timeVal, title, body, btn, status) {
+    const [h, m] = timeVal.split(':').map(Number);
+
+    function fireIfTime() {
+      const now = new Date();
+      if (now.getHours() === h && now.getMinutes() === m) {
+        if (Notification.permission === 'granted') {
+          new Notification(title, { body, icon: '💊' });
+        }
+        // Visual flash on meal block
+        const block = document.getElementById('meal-' + meal);
+        if (block) { block.style.boxShadow = '0 0 0 3px var(--soft-gold)'; setTimeout(() => block.style.boxShadow = '', 5000); }
+      }
+    }
+
+    // Check every 30 seconds
+    alarmTimers[meal+'_interval'] = setInterval(fireIfTime, 30000);
+    fireIfTime(); // check immediately in case it's right now
+  }
+
+  function saveAlarmTimes() {
+    const times = {};
+    ['breakfast','lunch','dinner','bedtime'].forEach(m => {
+      const inp = document.getElementById('alarm-'+m);
+      if (inp) times[m] = inp.value;
+    });
+    safeSet(ALARM_KEY, JSON.stringify(times));
+  }
+
+  function loadAlarmTimes() {
+    const saved = safeGet(ALARM_KEY);
+    if (!saved) return;
+    try {
+      const times = JSON.parse(saved);
+      ['breakfast','lunch','dinner','bedtime'].forEach(meal => {
+        if (times[meal]) {
+          const inp = document.getElementById('alarm-'+meal);
+          if (inp) inp.value = times[meal];
+        }
+      });
+    } catch(e) {}
+  }
+
+  loadAlarmTimes();
+
+  loadState();
+</script>
+</body>
+</html>
