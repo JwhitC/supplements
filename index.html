@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Wellness">
+<meta name="theme-color" content="#faf7f2">
 <title>Daily Wellness Schedule</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -22,7 +26,8 @@
     --complete-green: #4caf7d;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: var(--cream); font-family: 'DM Sans', sans-serif; color: var(--text-dark); min-height: 100vh; padding: 40px 20px; }
+  body { background: var(--cream); font-family: 'DM Sans', sans-serif; color: var(--text-dark); min-height: 100vh; padding: 40px 20px; padding-top: max(40px, env(safe-area-inset-top)); padding-bottom: max(40px, env(safe-area-inset-bottom)); -webkit-text-size-adjust: 100%; }
+  .supp-row, .checkbox, .info-btn, .cal-btn, .popup-close { -webkit-tap-highlight-color: transparent; }
   .page { max-width: 780px; margin: 0 auto; }
 
   .reset-banner { display: none; text-align: center; padding: 10px; background: linear-gradient(135deg,#fef9f0,#fdf4e4); border: 1px solid var(--gold-light); border-radius: 10px; margin-bottom: 20px; font-size: 13px; color: var(--soft-gold); font-weight: 500; }
@@ -130,6 +135,7 @@
   .alarm-title { font-family:'Playfair Display',serif; font-size:16px; color:var(--text-mid); margin-bottom:6px; }
   .alarm-subtitle { font-size:12px; color:var(--text-light); margin-bottom:16px; }
   .alarm-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .alarm-card.dinner-card { grid-column:span 1; }
   .alarm-card { border-radius:12px; padding:14px 16px; border:1px solid var(--border); background:white; }
   .alarm-card-top { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
   .alarm-emoji { font-size:20px; }
@@ -160,6 +166,8 @@
   .alarm-card.bedtime-card .alarm-meal-name { color:var(--bedtime); }
   .alarm-card.bedtime-card .alarm-set-btn.set { background:var(--bedtime); }
 
+  .cal-btn { display:block; width:100%; margin-top:16px; padding:14px; border-radius:12px; border:none; background:linear-gradient(135deg,var(--soft-gold),#dbbb63); color:white; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:500; cursor:pointer; transition:opacity .2s; -webkit-tap-highlight-color:transparent; }
+  .cal-btn:active { opacity:.8; }
   .alarm-note { font-size:11px; color:var(--text-light); margin-top:12px; text-align:center; font-style:italic; }
 
   .notes-section { margin-top:28px; padding:22px 24px; background:linear-gradient(135deg,#fef9f0,#fdf4e4); border-radius:16px; border:1px solid var(--gold-light); }
@@ -210,7 +218,7 @@
   <div class="meal-block morning" id="meal-breakfast">
     <div class="meal-header">
       <div class="meal-icon">🌅</div>
-      <div class="meal-title">Breakfast</div>
+      <div class="meal-title">Morning</div>
       <div class="meal-badge">With Food</div>
       <div class="meal-complete-badge">✓ Complete!</div>
     </div>
@@ -218,33 +226,19 @@
       <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">AHCC Kinoko Platinum <span class="info-btn" onclick="showInfo(event,'AHCC Kinoko Platinum','4 capsules — 3,000mg, once daily on empty stomach','This matches the protocol used in the phase II HPV trial: 3g once daily on an empty stomach for 6 months. In that study about 64% of women cleared persistent high-risk HPV vs 10% on placebo, and most responders stayed negative 6 months after stopping. Single morning dose — do not split.',['Trial protocol: 3g once daily, empty stomach, 6 months','Supports immune clearance of persistent HPV','Well tolerated with no significant side effects reported','Take alone — 30+ min before any food or other supplements'])">i</span></div><div class="supp-dose">4 capsules — 3,000mg (single daily dose)</div></div><div class="supp-note warning">Empty stomach</div></div>
       <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Probiotic Mood+ <span class="info-btn" onclick="showInfo(event,'Garden of Life Probiotic Mood+','1 capsule — 50 Billion CFU, 16 strains','The gut produces ~90% of the body\'s serotonin. This probiotic was specifically formulated with strains shown to support emotional wellbeing and the gut-brain axis — directly relevant to OCD and mood.',['16 strains targeting gut-brain mood connection','50 Billion CFU guaranteed potency','Promotes emotional wellbeing and relaxation','Best taken before food for optimal colonization'])">i</span></div><div class="supp-dose">1 capsule — 50 Billion CFU</div></div><div class="supp-note warning">Before eating</div></div>
       <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Optimize Minerals <span class="info-btn" onclick="showInfo(event,'Optimize Minerals','Per label','A comprehensive full-spectrum mineral formula supporting hundreds of enzyme reactions including neurotransmitter production, energy metabolism, and brain function.',['Full-spectrum minerals in bioavailable form','Essential cofactors for neurotransmitter synthesis','Supports hydration and sustained energy','Foundation supplement for overall health'])">i</span></div><div class="supp-dose">Per label</div></div><div class="supp-note warning">Before eating</div></div>
-      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Methylfolate 5-MTHF <span class="info-btn" onclick="showInfo(event,'Methylfolate 5-MTHF + B6 + B12','½ serving — 7.5mg (dose 1 of 2)','The only folate form that crosses the blood-brain barrier. Essential for producing serotonin, dopamine, and norepinephrine — the neurotransmitters directly involved in OCD. The included B6 and Methyl B12 complete the methylation cycle.',['Only folate that crosses blood-brain barrier','Directly supports serotonin and dopamine production','Includes B6 and Methyl B12 for complete methylation','Split dosing maintains steady brain levels all day'])">i</span></div><div class="supp-dose">½ serving — 7.5mg (dose 1 of 2)</div></div><div class="supp-note">With food</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Methylfolate 5-MTHF <span class="info-btn" onclick="showInfo(event,'Methylfolate 5-MTHF + B6 + B12','1 softgel — 7.5mg (dose 1 of 2)','The only folate form that crosses the blood-brain barrier. Essential for producing serotonin, dopamine, and norepinephrine — the neurotransmitters directly involved in OCD. The included B6 and Methyl B12 complete the methylation cycle.',['Only folate that crosses blood-brain barrier','Directly supports serotonin and dopamine production','Includes B6 and Methyl B12 for complete methylation','Split dosing maintains steady brain levels all day'])">i</span></div><div class="supp-dose">1 softgel — 7.5mg (dose 1 of 2)</div></div><div class="supp-note">With food</div></div>
       <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Zinc <span class="info-btn" onclick="showInfo(event,'Zinc 25mg','1 tablet — 25mg, once daily','OCD patients commonly have lower zinc levels. Zinc supports neurotransmitter regulation and brain health. Combined with the zinc in Calcium AKG, this brings the daily total to 40mg — right at the safe upper limit, so no copper supplementation is needed.',['Neurotransmitter regulation linked to OCD','Once-daily dose paired with Calcium AKG (40mg total)','Immune system and cellular function support','No copper needed at this combined dose level'])">i</span></div><div class="supp-dose">1 tablet — 25mg</div></div><div class="supp-note">With food</div></div>
       <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Calcium AKG <span class="info-btn" onclick="showInfo(event,'Calcium Alpha-Ketoglutarate (Ca-AKG)','Per label — contains 15mg zinc','A longevity-focused supplement shown to support cellular energy, healthy aging, and metabolic function. This product also contains 15mg of zinc, which combines with the separate zinc tablet for a 40mg daily total.',['Supports cellular energy and healthy aging','Popular longevity compound (AKG pathway support)','Contains 15mg zinc — factored into daily zinc total','Best taken with food for absorption and tolerance'])">i</span></div><div class="supp-dose">Per label (15mg zinc included)</div></div><div class="supp-note">With food</div></div>
-      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Omega-3 Fish Oil <span class="info-btn" onclick="showInfo(event,'Triple Strength Omega-3','3 capsules — 4,200mg (1,200mg EPA + 900mg DHA)','Therapeutic-strength omega-3. EPA reduces brain inflammation and is strongly linked to mood improvement. DHA is the primary structural fat in brain cell membranes. Wild-caught, triple-strength, burpless formula.',['EPA reduces neuroinflammation linked to OCD','DHA is primary brain structural fat','Research-backed dose for mood and mental health','Wild-caught, burpless lemon flavor'])">i</span></div><div class="supp-dose">3 capsules — 4,200mg</div></div><div class="supp-note">With fat</div></div>
       <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Vitamin D3 + K2 <span class="info-btn" onclick="showInfo(event,'Vitamin D3 10,000 IU + K2 100mcg','1 capsule — therapeutic dose','Deficiency is extremely common and strongly linked to anxiety, depression, and weakened immunity. D3 at 10,000 IU is a higher therapeutic dose. K2 ensures calcium is properly directed and also independently supports brain health.',['Deficiency strongly linked to anxiety and OCD','10,000 IU is a robust therapeutic neurological dose','K2 supports proper calcium metabolism','Must take with fat-containing meal'])">i</span></div><div class="supp-dose">10,000 IU + 100mcg</div></div><div class="supp-note">With fat</div></div>
-      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">NMN <span class="info-btn" onclick="showInfo(event,'Nicotinamide Mononucleotide (NMN)','500mg','NMN is a direct precursor to NAD+, a molecule essential for cellular energy that declines with age. Boosting NAD+ supports mitochondrial function, energy, and healthy aging. Synergizes with resveratrol (in dinner I3C supplement) for longevity support.',['Direct NAD+ precursor for cellular energy','Boosts mitochondrial function and healthy aging','Synergizes with resveratrol taken at dinner','Popular in longevity research circles'])">i</span></div><div class="supp-dose">500mg</div></div><div class="supp-note">With food</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">NMN <span class="info-btn" onclick="showInfo(event,'Nicotinamide Mononucleotide (NMN)','1 scoop — 500mg powder','NMN is a direct precursor to NAD+, a molecule essential for cellular energy that declines with age. Boosting NAD+ supports mitochondrial function, energy, and healthy aging. Synergizes with resveratrol (in dinner I3C supplement) for longevity support.',['Direct NAD+ precursor for cellular energy','Boosts mitochondrial function and healthy aging','Synergizes with resveratrol taken at dinner','Popular in longevity research circles'])">i</span></div><div class="supp-dose">1 scoop — 500mg powder</div></div><div class="supp-note">With food</div></div>
       <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Green Tea EGCG <span class="info-btn" onclick="showInfo(event,'Green Tea EGCG Extract','1 capsule — 5,000mg (20:1 extract, 98% polyphenols)','EGCG is the most potent antioxidant in green tea. At this 20:1 extract concentration it provides powerful neuroprotection, reduces brain inflammation, and supports healthy energy metabolism.',['Powerful neuroprotective antioxidant','Reduces brain inflammation','Supports healthy metabolism and energy','Synergizes with curcumin for anti-inflammatory effect'])">i</span></div><div class="supp-dose">1 capsule — 5,000mg extract</div></div><div class="supp-note">With food</div></div>
       <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Maca Root Complex <span class="info-btn" onclick="showInfo(event,'Maca Root Complex','Per label — 5,000mg (Red, Black, Yellow + Ashwagandha, Ginseng, Tongkat Ali)','This comprehensive adaptogen blend supports hormonal balance, libido, energy, and vitality. Red, black, and yellow maca each target different aspects of health. The addition of panax ginseng and tongkat ali makes this a complete female vitality formula.',['Supports healthy female hormone balance','Boosts libido and sexual vitality','Panax ginseng for cognitive function and energy','Tongkat ali supports hormonal health'])">i</span></div><div class="supp-dose">Per label</div></div><div class="supp-note">With food</div></div>
       <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">NAC <span class="info-btn" onclick="showInfo(event,'N-Acetyl Cysteine (NAC)','1,200mg (dose 1 of 2, 2,400mg total)','The most evidence-backed supplement for OCD. Regulates glutamate — the brain chemical directly implicated in OCD and compulsive behavior. Clinical studies used 2,400–3,000mg/day and showed significant symptom reduction.',['#1 most evidence-backed supplement for OCD','Regulates glutamate linked to OCD and compulsions','Powerful antioxidant that supports overall brain health','Dose 1 of 2 — second dose at dinner'])">i</span></div><div class="supp-dose">1,200mg (dose 1 of 2)</div></div><div class="supp-note">With food</div></div>
       <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Liposomal Vitamin C <span class="info-btn" onclick="showInfo(event,'Liposomal Vitamin C','2 tablets — 1,250mg (dose 1 of 2, 2,500mg total)','Vitamin C is water-soluble with a short plasma half-life, and absorption saturates at higher single doses. Splitting into two doses keeps blood levels elevated far longer than one large dose. The liposomal form bypasses the usual absorption ceiling and is gentler on the stomach.',['Split dosing keeps plasma levels elevated all day','Liposomal form bypasses standard absorption limits','Antioxidant and immune support','Dose 1 of 2 — second dose at dinner'])">i</span></div><div class="supp-dose">2 tablets — 1,250mg (dose 1 of 2)</div></div><div class="supp-note">With food</div></div>
-      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Turmeric Curcumin <span class="info-btn" onclick="showInfo(event,'Turmeric Curcumin','3 pills — 600mg, once daily','Curcumin is one of the most powerful natural anti-inflammatories. Brain and cellular inflammation are linked to aging and immune function. Take as a single daily dose with a fat-containing meal for best absorption.',['Potent anti-inflammatory for brain and body','Single daily dose — 3 pills together','Take with a fat-containing meal for absorption','Synergizes with EGCG for anti-inflammatory effect'])">i</span></div><div class="supp-dose">3 pills — 600mg</div></div><div class="supp-note">With fat</div></div>
-    </div>
-  </div>
-
-  <!-- LUNCH -->
-  <div class="meal-block lunch" id="meal-lunch">
-    <div class="meal-header">
-      <div class="meal-icon">☀️</div>
-      <div class="meal-title">Lunch</div>
-      <div class="meal-badge">With Food</div>
-      <div class="meal-complete-badge">✓ Complete!</div>
-    </div>
-    <div class="supplements">
-      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Methylfolate 5-MTHF <span class="info-btn" onclick="showInfo(event,'Methylfolate 5-MTHF + B6 + B12','½ serving — 7.5mg (dose 2 of 2, 15mg total)','Second split dose to maintain steady blood-brain levels all day. Methylfolate has a short half-life so splitting doses is more effective than one large morning dose.',['Maintains steady brain folate levels throughout day','Short half-life requires split dosing for best effect','Continues supporting serotonin production into afternoon','Dose 2 of 2 — completes 15mg daily total'])">i</span></div><div class="supp-dose">½ serving — 7.5mg (dose 2 of 2)</div></div><div class="supp-note">With food</div></div>
       <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Inositol <span class="info-btn" onclick="showInfo(event,'Inositol Powder','6g — mix in water (dose 1 of 2, 12g total)','One of the most remarkable supplements for OCD. Clinical trials at 12–18g/day showed results rivaling prescription medications. Works by sensitizing serotonin receptors in the brain. Stir into water, juice, or a smoothie.',['Clinical trials show OCD benefit rivaling medication','Works by sensitizing brain serotonin receptors','Also benefits anxiety, depression, and OCD','Mix in water — mild naturally sweet taste'])">i</span></div><div class="supp-dose">6g powder — mix in water (dose 1 of 2)</div></div><div class="supp-note">With food</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Creatine Monohydrate <span class="info-btn" onclick="showInfo(event,'Creatine Monohydrate','5g powder — daily','One of the most researched and well-supported supplements available. Best known for muscle strength and lean mass, but also has growing evidence for cognitive function, mood, and healthy aging in women. Timing does not matter — daily consistency is what builds saturation in muscle and brain tissue.',['Extensive safety and efficacy research','Supports muscle strength and lean mass retention','Emerging evidence for cognition and mood','Timing is flexible — consistency is what matters'])">i</span></div><div class="supp-dose">5g powder</div></div><div class="supp-note">In shake</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Multi Collagen Peptides <span class="info-btn" onclick="showInfo(event,'Multi Collagen Peptides','2 scoops','Collagen peptides have moderate evidence for skin elasticity, hydration, and joint comfort. Vitamin C is a required cofactor for the body to build its own collagen, so taking these alongside the morning vitamin C dose is a genuine synergy — not just convenience.',['Supports skin elasticity and hydration','Joint and connective tissue support','Vitamin C is required for collagen synthesis — taken together here','Mixes cleanly into the morning shake'])">i</span></div><div class="supp-dose">2 scoops</div></div><div class="supp-note">In shake</div></div>
       <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Fenugreek <span class="info-btn" onclick="showInfo(event,'Fenugreek','1 capsule — 500mg (dose 1 of 2, 1,000mg total)','Supports healthy hormone balance and female libido. Works by supporting healthy testosterone and estrogen levels. Pairs powerfully with maca, tongkat ali, and saffron already in the stack.',['Supports healthy female libido and desire','Balances estrogen and testosterone levels','Works synergistically with maca and tongkat ali','Dose 1 of 2 — second dose at dinner'])">i</span></div><div class="supp-dose">1 capsule — 500mg (dose 1 of 2)</div></div><div class="supp-note">With food</div></div>
-      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Beta-Carotene <span class="info-btn" onclick="showInfo(event,'Beta-Carotene','25,000 IU — take with fat','Safe precursor form of Vitamin A that converts only as needed. Powerful antioxidant for immune support, skin health, and cellular protection. Unlike preformed Vitamin A, Beta-Carotene is safe at this dose.',['Safe — converts to Vitamin A only as needed','Powerful antioxidant for cellular protection','Supports immune function alongside AHCC and D3','Must take with fat-containing meal'])">i</span></div><div class="supp-dose">25,000 IU</div></div><div class="supp-note">With fat</div></div>
     </div>
   </div>
 
@@ -260,6 +254,10 @@
       <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">NAC <span class="info-btn" onclick="showInfo(event,'N-Acetyl Cysteine (NAC)','1,200mg (dose 2 of 2, 2,400mg total)','Completes the 2,400mg/day therapeutic OCD dose. Evening NAC maintains glutamate regulation overnight — important as the brain is consolidating memories and emotional experiences during sleep.',['Completes 2,400mg therapeutic OCD dose','Maintains overnight glutamate regulation','Supports brain detoxification during sleep','Most evidence-backed supplement in this stack'])">i</span></div><div class="supp-dose">1,200mg (dose 2 of 2)</div></div><div class="supp-note">With food</div></div>
       <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Inositol <span class="info-btn" onclick="showInfo(event,'Inositol Powder','6g — mix in water (dose 2 of 2, 12g total)','Completes 12g/day clinical trial dose. Evening inositol has a calming effect that reduces anxiety and supports better sleep quality — ideal for winding down.',['Completes 12g/day clinical OCD trial dose','Evening dose supports calm and better sleep','Calming effect reduces evening anxiety','Serotonin receptor support continues overnight'])">i</span></div><div class="supp-dose">6g powder — mix in water (dose 2 of 2)</div></div><div class="supp-note">With food</div></div>
       <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Liposomal Vitamin C <span class="info-btn" onclick="showInfo(event,'Liposomal Vitamin C','2 tablets — 1,250mg (dose 2 of 2, 2,500mg total)','Second dose completing 2,500mg/day. Because vitamin C clears from the blood within hours, an evening dose extends coverage through the night rather than letting levels drop off after a single morning dose.',['Completes 2,500mg/day split dose','Evening dose extends overnight antioxidant coverage','Liposomal form is gentler on the stomach at this dose','Take with food to minimize any GI upset'])">i</span></div><div class="supp-dose">2 tablets — 1,250mg (dose 2 of 2)</div></div><div class="supp-note">With food</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Methylfolate 5-MTHF <span class="info-btn" onclick="showInfo(event,'Methylfolate 5-MTHF + B6 + B12','1 softgel — 7.5mg (dose 2 of 2, 15mg total)','Second split dose to maintain steady blood-brain levels all day. Methylfolate has a short half-life so splitting doses is more effective than one large morning dose.',['Maintains steady brain folate levels throughout day','Short half-life requires split dosing for best effect','Continues supporting serotonin production into afternoon','Dose 2 of 2 — completes 15mg daily total'])">i</span></div><div class="supp-dose">1 softgel — 7.5mg (dose 2 of 2)</div></div><div class="supp-note">With food</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Omega-3 Fish Oil <span class="info-btn" onclick="showInfo(event,'Triple Strength Omega-3','3 capsules — 4,200mg (1,200mg EPA + 900mg DHA)','Therapeutic-strength omega-3. EPA reduces brain inflammation and is strongly linked to mood improvement. DHA is the primary structural fat in brain cell membranes. Wild-caught, triple-strength, burpless formula.',['EPA reduces neuroinflammation linked to OCD','DHA is primary brain structural fat','Research-backed dose for mood and mental health','Wild-caught, burpless lemon flavor'])">i</span></div><div class="supp-dose">3 capsules — 4,200mg</div></div><div class="supp-note">With fat</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Beta-Carotene <span class="info-btn" onclick="showInfo(event,'Beta-Carotene','25,000 IU — take with fat','Safe precursor form of Vitamin A that converts only as needed. Powerful antioxidant for immune support, skin health, and cellular protection. Unlike preformed Vitamin A, Beta-Carotene is safe at this dose.',['Safe — converts to Vitamin A only as needed','Powerful antioxidant for cellular protection','Supports immune function alongside AHCC and D3','Must take with fat-containing meal'])">i</span></div><div class="supp-dose">25,000 IU</div></div><div class="supp-note">With fat</div></div>
+      <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Turmeric Curcumin <span class="info-btn" onclick="showInfo(event,'Turmeric Curcumin','3 pills — 600mg, once daily','Curcumin is one of the most powerful natural anti-inflammatories. Brain and cellular inflammation are linked to aging and immune function. Take as a single daily dose with a fat-containing meal for best absorption.',['Potent anti-inflammatory for brain and body','Single daily dose — 3 pills together','Take with a fat-containing meal for absorption','Synergizes with EGCG for anti-inflammatory effect'])">i</span></div><div class="supp-dose">3 pills — 600mg</div></div><div class="supp-note">With fat</div></div>
       <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Saffron+ Advanced <span class="info-btn" onclick="showInfo(event,'Saffron+ Advanced (Micro Ingredients)','Per label — contains Saffron, KSM-66, Magnesium Glycinate, Turmeric','A powerhouse combination for OCD and mood. Saffron extract shown in clinical studies to be as effective as fluvoxamine (a standard OCD prescription drug). KSM-66 reduces cortisol. Magnesium calms the nervous system. Turmeric fights inflammation.',['Saffron shown equal to OCD prescription drug in studies','KSM-66 reduces cortisol and stress response','Magnesium glycinate calms nervous system','Turmeric adds anti-inflammatory synergy'])">i</span></div><div class="supp-dose">Per label</div></div><div class="supp-note">With food</div></div>
       <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Fenugreek <span class="info-btn" onclick="showInfo(event,'Fenugreek','1 capsule — 500mg (dose 2 of 2, 1,000mg total)','Completes the 1,000mg/day hormonal support dose. Evening dosing supports overnight hormonal regulation and restoration.',['Completes 1,000mg/day hormonal support dose','Evening dose supports overnight hormone balance','Builds cumulative benefit with consistent daily use','Pairs powerfully with maca and saffron in stack'])">i</span></div><div class="supp-dose">1 capsule — 500mg (dose 2 of 2)</div></div><div class="supp-note">With food</div></div>
       <div class="supp-row" onclick="toggleCheck(this)"><div class="checkbox"></div><div class="supp-info"><div class="supp-name">Indole-3-Carbinol + Resveratrol <span class="info-btn" onclick="showInfo(event,'Indole-3-Carbinol + Resveratrol','300mg — once daily at dinner','I3C supports healthy estrogen metabolism and cellular protection. The resveratrol component is a powerful longevity compound that directly synergizes with the NMN taken each morning for NAD+ support.',['Supports healthy estrogen metabolism','Resveratrol synergizes with morning NMN for longevity','Cellular protection and anti-aging support','Once daily — dinner is optimal for absorption'])">i</span></div><div class="supp-dose">300mg — once daily</div></div><div class="supp-note">With food</div></div>
@@ -280,49 +278,37 @@
     </div>
   </div>
 
-  <!-- ALARMS -->
+  <!-- REMINDERS -->
   <div class="alarm-section">
-    <div class="alarm-title">⏰ Set Daily Reminders</div>
-    <div class="alarm-subtitle">Set a time for each meal — your browser will notify you when it's time to take your supplements</div>
+    <div class="alarm-title">⏰ Set Up Daily Reminders</div>
+    <div class="alarm-subtitle">Pick your times, then tap Add to Calendar. This creates repeating daily events in your iPhone Calendar with real alerts — they work even when this app is closed.</div>
     <div class="alarm-grid">
       <div class="alarm-card morning-card">
         <div class="alarm-card-top"><div class="alarm-emoji">🌅</div><div class="alarm-meal-name">Breakfast</div></div>
         <div class="alarm-time-row">
           <input type="time" class="alarm-time-input" id="alarm-breakfast" value="08:00">
-          <button class="alarm-set-btn set" onclick="setAlarm('breakfast','🌅 Breakfast Supplements','Time for your breakfast supplements! 💊')">Set</button>
         </div>
-        <div class="alarm-status" id="status-breakfast"></div>
-      </div>
-      <div class="alarm-card lunch-card">
-        <div class="alarm-card-top"><div class="alarm-emoji">☀️</div><div class="alarm-meal-name">Lunch</div></div>
-        <div class="alarm-time-row">
-          <input type="time" class="alarm-time-input" id="alarm-lunch" value="12:00">
-          <button class="alarm-set-btn set" onclick="setAlarm('lunch','☀️ Lunch Supplements','Time for your lunch supplements! 💊')">Set</button>
-        </div>
-        <div class="alarm-status" id="status-lunch"></div>
       </div>
       <div class="alarm-card dinner-card">
         <div class="alarm-card-top"><div class="alarm-emoji">🍽️</div><div class="alarm-meal-name">Dinner</div></div>
         <div class="alarm-time-row">
           <input type="time" class="alarm-time-input" id="alarm-dinner" value="18:00">
-          <button class="alarm-set-btn set" onclick="setAlarm('dinner','🍽️ Dinner Supplements','Time for your dinner supplements! 💊')">Set</button>
         </div>
-        <div class="alarm-status" id="status-dinner"></div>
       </div>
       <div class="alarm-card bedtime-card">
         <div class="alarm-card-top"><div class="alarm-emoji">🌙</div><div class="alarm-meal-name">Bedtime</div></div>
         <div class="alarm-time-row">
           <input type="time" class="alarm-time-input" id="alarm-bedtime" value="21:00">
-          <button class="alarm-set-btn set" onclick="setAlarm('bedtime','🌙 Bedtime Supplements','Time for your bedtime supplements! 💊')">Set</button>
         </div>
-        <div class="alarm-status" id="status-bedtime"></div>
       </div>
     </div>
-    <div class="alarm-note" id="alarm-note">Tap Set on any alarm — your browser will ask permission to send notifications</div>
+    <button class="cal-btn" onclick="downloadCalendar()">📅 Add All 3 Reminders to Calendar</button>
+    <div class="alarm-note" id="alarm-note">Tap the button, then choose "Add All" when your Calendar opens. Each reminder repeats daily with a notification.</div>
   </div>
 
   <div class="notes-section">
     <div class="notes-title">⚠️ Important Reminders</div>
+    <div class="note-item"><span class="note-dot">◆</span><span><strong>Three times a day</strong> — Morning, dinner, bedtime. Lunch was folded into the other meals so there's nothing to remember away from home</span></div>
     <div class="note-item"><span class="note-dot">◆</span><span><strong>AHCC</strong> — 3g as a single morning dose on an empty stomach, at least 30 min before food or other supplements. This matches the clinical trial protocol — don't split it</span></div>
     <div class="note-item"><span class="note-dot">◆</span><span><strong>Zinc</strong> — Once daily at breakfast (25mg) + 15mg from Calcium AKG = 40mg/day total, which is at the upper limit. If continuing past 3 months, check copper levels or add 1mg copper</span></div>
     <div class="note-item"><span class="note-dot">◆</span><span><strong>Ashwagandha</strong> — Standalone removed. Saffron+ Advanced still contains some KSM-66, which is the single source now</span></div>
@@ -380,7 +366,7 @@
   }
 
   function updateMealCompletion() {
-    ['breakfast','lunch','dinner','bedtime'].forEach(meal => {
+    ['breakfast','dinner','bedtime'].forEach(meal => {
       const block = document.getElementById('meal-'+meal);
       if (!block) return;
       const boxes = block.querySelectorAll('.checkbox');
@@ -477,88 +463,75 @@
 
   function closePopup(e) { if(e.target===document.getElementById('popupOverlay')) document.getElementById('popupOverlay').classList.remove('active'); }
 
-  // ── ALARMS ──
-  const alarmTimers = {};
-  const ALARM_KEY = 'supp_alarms_v3';
+  // ── CALENDAR REMINDERS ──
+  const ALARM_KEY = 'supp_alarms_v4';
 
-  function formatTime12(val) {
-    if (!val) return '';
-    const [h, m] = val.split(':').map(Number);
-    const ampm = h >= 12 ? 'PM' : 'AM';
-    const h12 = h % 12 || 12;
-    return `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+  const MEALS = [
+    { id:'breakfast', title:'\u{1F305} Morning Supplements', desc:'AHCC first on empty stomach\\, then with food: probiotic\\, minerals\\, methylfolate\\, zinc\\, Calcium AKG\\, D3+K2\\, NMN\\, green tea\\, maca\\, NAC\\, vitamin C\\, fenugreek. Shake: NMN\\, inositol\\, creatine\\, collagen' },
+    { id:'dinner',    title:'\u{1F37D}\u{FE0F} Dinner Supplements',    desc:'NAC\\, inositol\\, vitamin C\\, methylfolate\\, omega-3\\, beta-carotene\\, turmeric\\, Saffron+\\, fenugreek\\, I3C + resveratrol' },
+    { id:'bedtime',   title:'\u{1F319} Bedtime Supplements',   desc:'Magnesium glycinate\\, L-theanine' }
+  ];
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  function buildICS() {
+    const now = new Date();
+    const stamp = now.getUTCFullYear()+pad(now.getUTCMonth()+1)+pad(now.getUTCDate())+'T'+pad(now.getUTCHours())+pad(now.getUTCMinutes())+pad(now.getUTCSeconds())+'Z';
+    const y = now.getFullYear(), mo = now.getMonth()+1, d = now.getDate();
+    const dateStr = `${y}${pad(mo)}${pad(d)}`;
+
+    let out = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Daily Wellness//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
+
+    MEALS.forEach(meal => {
+      const inp = document.getElementById('alarm-'+meal.id);
+      if (!inp || !inp.value) return;
+      const [h,m] = inp.value.split(':');
+      const dtstart = `${dateStr}T${pad(+h)}${pad(+m)}00`;
+      const endM = (+m + 15) % 60;
+      const endH = (+h + Math.floor((+m + 15)/60)) % 24;
+      const dtend = `${dateStr}T${pad(endH)}${pad(endM)}00`;
+      out.push(
+        'BEGIN:VEVENT',
+        'UID:'+meal.id+'-'+Date.now()+'@wellness',
+        'DTSTAMP:'+stamp,
+        'DTSTART:'+dtstart,
+        'DTEND:'+dtend,
+        'RRULE:FREQ=DAILY',
+        'SUMMARY:'+meal.title,
+        'DESCRIPTION:'+meal.desc,
+        'BEGIN:VALARM',
+        'TRIGGER:PT0M',
+        'ACTION:DISPLAY',
+        'DESCRIPTION:'+meal.title,
+        'END:VALARM',
+        'END:VEVENT'
+      );
+    });
+
+    out.push('END:VCALENDAR');
+    return out.join('\r\n');
   }
 
-  function setAlarm(meal, title, body) {
-    const input = document.getElementById('alarm-' + meal);
-    const btn = input.parentElement.querySelector('.alarm-set-btn');
-    const status = document.getElementById('status-' + meal);
-    const val = input.value;
-    if (!val) { status.textContent = 'Please enter a time first'; return; }
-
-    // Cancel existing timer
-    if (alarmTimers[meal]) { clearTimeout(alarmTimers[meal]); clearInterval(alarmTimers[meal+'_interval']); }
-
-    if (!('Notification' in window)) {
-      // Fallback — save time and show status only
-      saveAlarmTimes();
-      btn.className = 'alarm-set-btn active';
-      btn.textContent = '✓ Set';
-      status.textContent = `Reminder set for ${formatTime12(val)}`;
-      scheduleAlarm(meal, val, title, body, btn, status);
-      return;
-    }
-
-    if (Notification.permission === 'granted') {
-      scheduleAlarm(meal, val, title, body, btn, status);
-      btn.className = 'alarm-set-btn active';
-      btn.textContent = '✓ Set';
-      status.textContent = `Reminder set for ${formatTime12(val)}`;
-      saveAlarmTimes();
-    } else if (Notification.permission !== 'denied') {
-      Notification.requestPermission().then(perm => {
-        if (perm === 'granted') {
-          scheduleAlarm(meal, val, title, body, btn, status);
-          btn.className = 'alarm-set-btn active';
-          btn.textContent = '✓ Set';
-          status.textContent = `Reminder set for ${formatTime12(val)}`;
-          saveAlarmTimes();
-          document.getElementById('alarm-note').textContent = '✅ Notifications enabled! Your reminders are set.';
-        } else {
-          status.textContent = 'Notifications blocked — enable in browser settings';
-          document.getElementById('alarm-note').textContent = '⚠️ To enable: tap the lock icon in your browser address bar → Notifications → Allow';
-        }
-      });
-    } else {
-      status.textContent = '⚠️ Notifications blocked — check browser settings';
-    }
-  }
-
-  function scheduleAlarm(meal, timeVal, title, body, btn, status) {
-    const [h, m] = timeVal.split(':').map(Number);
-
-    function fireIfTime() {
-      const now = new Date();
-      if (now.getHours() === h && now.getMinutes() === m) {
-        if (Notification.permission === 'granted') {
-          new Notification(title, { body, icon: '💊' });
-        }
-        // Visual flash on meal block
-        const block = document.getElementById('meal-' + meal);
-        if (block) { block.style.boxShadow = '0 0 0 3px var(--soft-gold)'; setTimeout(() => block.style.boxShadow = '', 5000); }
-      }
-    }
-
-    // Check every 30 seconds
-    alarmTimers[meal+'_interval'] = setInterval(fireIfTime, 30000);
-    fireIfTime(); // check immediately in case it's right now
+  function downloadCalendar() {
+    saveAlarmTimes();
+    const ics = buildICS();
+    const blob = new Blob([ics], { type:'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'supplement-reminders.ics';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url), 2000);
+    document.getElementById('alarm-note').textContent = '\u2705 Downloaded! Open the file and tap "Add All" to add them to your Calendar.';
   }
 
   function saveAlarmTimes() {
     const times = {};
-    ['breakfast','lunch','dinner','bedtime'].forEach(m => {
-      const inp = document.getElementById('alarm-'+m);
-      if (inp) times[m] = inp.value;
+    MEALS.forEach(m => {
+      const inp = document.getElementById('alarm-'+m.id);
+      if (inp) times[m.id] = inp.value;
     });
     safeSet(ALARM_KEY, JSON.stringify(times));
   }
@@ -568,14 +541,18 @@
     if (!saved) return;
     try {
       const times = JSON.parse(saved);
-      ['breakfast','lunch','dinner','bedtime'].forEach(meal => {
-        if (times[meal]) {
-          const inp = document.getElementById('alarm-'+meal);
-          if (inp) inp.value = times[meal];
+      MEALS.forEach(m => {
+        if (times[m.id]) {
+          const inp = document.getElementById('alarm-'+m.id);
+          if (inp) inp.value = times[m.id];
         }
       });
     } catch(e) {}
   }
+
+  document.querySelectorAll('.alarm-time-input').forEach(inp => {
+    inp.addEventListener('change', saveAlarmTimes);
+  });
 
   loadAlarmTimes();
 
